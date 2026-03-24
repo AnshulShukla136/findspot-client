@@ -1,3 +1,4 @@
+
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { User, Mail, Phone, Bell, Shield, LogOut, ChevronRight, Heart } from 'lucide-react'
@@ -29,7 +30,6 @@ export default function Profile() {
     toast.success('Preference updated')
   }
 
-  // ✅ Safe initials — handles all cases
   const getInitials = () => {
     if (user?.name) {
       return user.name
@@ -48,17 +48,14 @@ export default function Profile() {
     return 'U'
   }
 
-  // ✅ Safe display name
   const displayName =
     user?.name ||
     `${user?.firstName || ''} ${user?.lastName || ''}`.trim() ||
     user?.email?.split('@')[0] ||
     'User'
 
-  // ✅ Safe first name for greeting
   const firstName = user?.firstName || user?.name?.split(' ')[0] || 'there'
 
-  // ✅ Safe phone
   const phone = user?.phone || null
 
   return (
@@ -277,4 +274,5 @@ export default function Profile() {
 
     </div>
   )
+
 }
