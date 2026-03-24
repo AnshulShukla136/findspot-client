@@ -1,0 +1,49 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+  }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background-color: #ffffff;
+    color: #0b0b0b;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  input, button, select, textarea {
+    font-family: 'DM Sans', sans-serif;
+  }
+}
+
+@layer components {
+  .btn-primary {
+    @apply w-full py-3 bg-[#0b0b0b] text-white text-sm font-medium 
+           rounded-xl hover:bg-[#222] transition-colors duration-150 
+           cursor-pointer border-none outline-none;
+  }
+
+  .btn-social {
+    @apply flex-1 flex items-center justify-center gap-2 py-2.5 px-3 
+           bg-white border border-gray-200 rounded-xl text-sm text-gray-700 
+           font-normal hover:bg-gray-50 hover:border-gray-300 
+           transition-all duration-150 cursor-pointer;
+  }
+
+  .form-input {
+    @apply w-full px-3.5 py-2.5 border border-gray-200 rounded-xl 
+           text-sm text-[#0b0b0b] bg-white outline-none placeholder-gray-300
+           focus:border-[#0b0b0b] transition-colors duration-150;
+  }
+
+  .input-label {
+    @apply block text-xs text-gray-500 font-medium mb-1.5 tracking-wide;
+  }
+}
