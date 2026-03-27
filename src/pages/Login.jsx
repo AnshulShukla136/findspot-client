@@ -153,8 +153,6 @@ const handleResend = async () => {
 
         <div className="w-full max-w-sm mx-auto">
 
-          <img src={logoImg} alt="findSpot" className="h-8 w-auto mb-7" />
-
           {/* ── STEP 1 — Enter Email ── */}
           {step === 1 && (
             <>
