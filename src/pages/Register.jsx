@@ -172,8 +172,6 @@ export default function Register() {
 
         <div className="w-full max-w-sm mx-auto">
 
-          <img src={logoImg} alt="findSpot" className="h-8 w-auto mb-7" />
-
           <h1 className="font-serif text-2xl font-normal text-[#0b0b0b] mb-1 tracking-tight">
             Create account
           </h1>
