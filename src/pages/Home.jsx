@@ -1,8 +1,9 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useNavigate } from 'react-router-dom'
 import { Search, TrendingUp, Zap, ArrowRight, Star } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import logoImg from '../assets/findSpot.png'
+import { searchProducts } from '../services/api'
 
 const TRENDING = [
   'iPhone 15', 'Nike Air Max', 'Samsung TV', 'Boat Earbuds',
@@ -20,42 +21,13 @@ const CATEGORIES = [
   { name: 'Grocery', icon: '🛒', color: 'bg-teal-50 hover:bg-teal-100' },
 ]
 
-const DEALS = [
-  {
-    id: 1,
-    name: 'boAt Rockerz 450 Bluetooth Headphones',
-    image: 'https://m.media-amazon.com/images/I/71NTwRABB0L._SX679_.jpg',
-    price: 1299, mrp: 3990, discount: 67,
-    platform: 'Amazon', rating: 4.2,
-  },
-  {
-    id: 2,
-    name: "Levi's Men's 511 Slim Fit Jeans",
-    image: 'https://image.hm.com/assets/hm/b5/1b/b51b2ef4f41f2f0de730c56fca3a6d34f0dbf0f8.jpg',
-    price: 1799, mrp: 3999, discount: 55,
-    platform: 'Flipkart', rating: 4.5,
-  },
-  {
-    id: 3,
-    name: 'Instant Pot Duo 7-in-1 Electric Pressure Cooker',
-    image: 'https://m.media-amazon.com/images/I/71V1BE3CVJL._SX679_.jpg',
-    price: 6999, mrp: 12999, discount: 46,
-    platform: 'Amazon', rating: 4.6,
-  },
-  {
-    id: 4,
-    name: "Nike Men's Running Shoes",
-    image: 'https://static.nike.com/a/images/t_PDP_1280_v1/f_auto,q_auto:eco/eda8ef94-a23a-440b-b35e-7afdf2913e02/custom-nike-air-force-1-mid-07-by-you-shoes.png',
-    price: 3499, mrp: 6999, discount: 50,
-    platform: 'Myntra', rating: 4.3,
-  },
-]
-
 const PLATFORM_COLORS = {
   Amazon: 'bg-orange-50 text-orange-600',
   Flipkart: 'bg-blue-50 text-blue-600',
   Myntra: 'bg-pink-50 text-pink-600',
   Ajio: 'bg-purple-50 text-purple-600',
+  Meesho: 'bg-red-50 text-red-500',
+  Nykaa: 'bg-rose-50 text-rose-600',
 }
 
 const PLATFORMS = [
@@ -68,9 +40,83 @@ const PLATFORMS = [
   { name: 'Snapdeal', bg: 'bg-yellow-50' },
 ]
 
+// Fallback deals if API fails
+const FALLBACK_DEALS = [
+  {
+    id: 1,
+    title: 'boAt Rockerz 450 Bluetooth Headphones',
+    image: 'https://m.media-amazon.com/images/I/71NTwRABB0L._SX679_.jpg',
+    price: 1299, mrp: 3990, discount: 67,
+    platform: 'Amazon', rating: 4.2,
+    url: 'https://amazon.in',
+  },
+  {
+    id: 2,
+    title: 'Samsung 43" Crystal 4K TV',
+    image: 'https://m.media-amazon.com/images/I/71V1BE3CVJL._SX679_.jpg',
+    price: 28999, mrp: 54900, discount: 47,
+    platform: 'Amazon', rating: 4.4,
+    url: 'https://amazon.in',
+  },
+  {
+    id: 3,
+    title: 'Apple AirPods Pro 2nd Gen',
+    image: 'https://m.media-amazon.com/images/I/71NTwRABB0L._SX679_.jpg',
+    price: 19900, mrp: 26900, discount: 26,
+    platform: 'Amazon', rating: 4.7,
+    url: 'https://amazon.in',
+  },
+  {
+    id: 4,
+    title: 'OnePlus Nord CE 3 Lite 5G',
+    image: 'https://m.media-amazon.com/images/I/71V1BE3CVJL._SX679_.jpg',
+    price: 14999, mrp: 19999, discount: 25,
+    platform: 'Amazon', rating: 4.2,
+    url: 'https://amazon.in',
+  },
+]
+
 export default function Home() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
+  const [deals, setDeals] = useState([])
+  const [dealsLoading, setDealsLoading] = useState(true)
+
+  // Fetch real deals on page load
+  useEffect(() => {
+    let cancelled = false
+
+    const fetchDeals = async () => {
+      try {
+        setDealsLoading(true)
+        // Search for trending products to show as deals
+        const res = await searchProducts('best deals electronics', {
+          sort: 'discount'
+        })
+
+        if (!cancelled && res.data?.products?.length > 0) {
+          // Show top 4 deals with highest discount
+          const topDeals = res.data.products
+            .filter(p => p.discount > 0)
+            .sort((a, b) => b.discount - a.discount)
+            .slice(0, 4)
+          setDeals(topDeals)
+        } else if (!cancelled) {
+          setDeals(FALLBACK_DEALS)
+        }
+      } catch (err) {
+        if (!cancelled) {
+          console.error('Failed to fetch deals:', err.message)
+          setDeals(FALLBACK_DEALS)
+        }
+      } finally {
+        if (!cancelled) setDealsLoading(false)
+      }
+    }
+
+    fetchDeals()
+    return () => { cancelled = true }
+  }, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -84,9 +130,14 @@ export default function Home() {
 
       {/* ───── HERO ───── */}
       <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 overflow-hidden">
+
+        {/* Background logo watermark */}
+        <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full overflow-hidden opacity-[0.04] pointer-events-none">
+          <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
+        </div>
+
         <div className="text-center max-w-3xl mx-auto relative z-10">
 
-          {/* Badge */}
           <div className="inline-flex items-center gap-2 bg-gray-50 border border-gray-200
                           rounded-full px-4 py-1.5 mb-6">
             <Zap size={12} className="text-[#0b0b0b]" />
@@ -95,7 +146,6 @@ export default function Home() {
             </span>
           </div>
 
-          {/* Heading */}
           <h1 className="font-serif text-5xl sm:text-6xl font-normal text-[#0b0b0b]
                          leading-tight mb-5 tracking-tight">
             Find the best deal,<br />
@@ -131,7 +181,7 @@ export default function Home() {
             </div>
           </form>
 
-          {/* Trending searches */}
+          {/* Trending */}
           <div className="flex flex-wrap items-center justify-center gap-2">
             <span className="text-xs text-gray-400 flex items-center gap-1">
               <TrendingUp size={12} />
@@ -173,13 +223,13 @@ export default function Home() {
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div className="grid grid-cols-3 gap-4">
           {[
-            { value: '7+', label: 'Platforms covered', bg: 'bg-gray-50' },
-            { value: '1M+', label: 'Products tracked', bg: 'bg-gray-50' },
-            { value: '₹500', label: 'Avg. savings per order', bg: 'bg-gray-50' },
+            { value: '7+', label: 'Platforms covered' },
+            { value: '1M+', label: 'Products tracked' },
+            { value: '₹500', label: 'Avg. savings per order' },
           ].map(stat => (
             <div
               key={stat.label}
-              className={`${stat.bg} border border-gray-100 rounded-2xl p-6 text-center`}
+              className="bg-gray-50 border border-gray-100 rounded-2xl p-6 text-center"
             >
               <p className="font-serif text-3xl font-normal text-[#0b0b0b] mb-1">
                 {stat.value}
@@ -223,8 +273,8 @@ export default function Home() {
             <h2 className="font-serif text-2xl font-normal text-[#0b0b0b]">
               Today's top deals
             </h2>
-            <span className="bg-red-50 text-red-500 text-xs px-2.5 py-1 rounded-full font-medium
-                             flex items-center gap-1">
+            <span className="bg-red-50 text-red-500 text-xs px-2.5 py-1 rounded-full
+                             font-medium flex items-center gap-1">
               <span className="w-1.5 h-1.5 bg-red-500 rounded-full animate-pulse inline-block" />
               Live
             </span>
@@ -238,63 +288,104 @@ export default function Home() {
           </button>
         </div>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-          {DEALS.map(deal => (
-            <div
-              key={deal.id}
-              onClick={() => navigate(`/product/${deal.id}`)}
-              className="bg-white border border-gray-100 rounded-2xl overflow-hidden
-                         hover:shadow-md hover:border-gray-200 transition-all
-                         cursor-pointer group"
-            >
-              {/* Image */}
-              <div className="relative bg-gray-50 aspect-square overflow-hidden">
-                <img
-                  src={deal.image}
-                  alt={deal.name}
-                  className="w-full h-full object-contain p-4 group-hover:scale-105
-                             transition-transform duration-300"
-                  onError={(e) => {
-                    e.target.src = 'https://via.placeholder.com/300x300?text=No+Image'
-                  }}
-                />
-                <span className="absolute top-2 left-2 bg-red-500 text-white text-xs
-                                 font-medium px-2 py-1 rounded-lg">
-                  {deal.discount}% off
-                </span>
+        {/* Loading skeleton */}
+        {dealsLoading && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {[...Array(4)].map((_, i) => (
+              <div key={i} className="border border-gray-100 rounded-2xl overflow-hidden animate-pulse">
+                <div className="bg-gray-100 aspect-square" />
+                <div className="p-3 space-y-2">
+                  <div className="h-3 bg-gray-100 rounded w-full" />
+                  <div className="h-3 bg-gray-100 rounded w-2/3" />
+                  <div className="h-4 bg-gray-100 rounded w-1/2" />
+                </div>
               </div>
+            ))}
+          </div>
+        )}
 
-              {/* Info */}
-              <div className="p-3">
-                <p className="text-xs text-gray-500 line-clamp-2 mb-2 leading-relaxed">
-                  {deal.name}
-                </p>
-                <div className="flex items-baseline gap-2 mb-2">
-                  <span className="font-medium text-[#0b0b0b] text-base">
-                    ₹{deal.price.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-gray-400 line-through">
-                    ₹{deal.mrp.toLocaleString()}
-                  </span>
+        {/* Real deals */}
+        {!dealsLoading && (
+          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
+            {deals.map((deal, i) => (
+              <div
+                key={deal.id || deal.asin || i}
+                onClick={() => deal.url
+                  ? window.open(deal.url, '_blank')
+                  : navigate(`/product/${deal.id}`)
+                }
+                className="bg-white border border-gray-100 rounded-2xl overflow-hidden
+                           hover:shadow-md hover:border-gray-200 transition-all
+                           cursor-pointer group"
+              >
+                {/* Image */}
+                <div className="relative bg-gray-50 aspect-square overflow-hidden">
+                  <img
+                    src={deal.image}
+                    alt={deal.title || deal.name}
+                    className="w-full h-full object-contain p-4 group-hover:scale-105
+                               transition-transform duration-300"
+                    onError={(e) => {
+                      e.target.src = 'https://via.placeholder.com/300x300?text=No+Image'
+                    }}
+                  />
+                  {deal.discount > 0 && (
+                    <span className="absolute top-2 left-2 bg-red-500 text-white
+                                     text-xs font-medium px-2 py-1 rounded-lg">
+                      {deal.discount}% off
+                    </span>
+                  )}
+                  {deal.badge && (
+                    <span className="absolute top-2 right-2 bg-orange-400 text-white
+                                     text-xs font-medium px-2 py-1 rounded-lg">
+                      {deal.badge}
+                    </span>
+                  )}
                 </div>
-                <div className="flex items-center justify-between">
-                  <span className={`text-xs px-2 py-0.5 rounded-full font-normal
-                                   ${PLATFORM_COLORS[deal.platform] || 'bg-gray-100 text-gray-600'}`}>
-                    {deal.platform}
-                  </span>
-                  <div className="flex items-center gap-1">
-                    <Star size={11} className="fill-amber-400 text-amber-400" />
-                    <span className="text-xs text-gray-400">{deal.rating}</span>
+
+                {/* Info */}
+                <div className="p-3">
+                  <p className="text-xs text-gray-500 line-clamp-2 mb-2 leading-relaxed">
+                    {deal.title || deal.name}
+                  </p>
+                  <div className="flex items-baseline gap-2 mb-2">
+                    <span className="font-medium text-[#0b0b0b] text-base">
+                      ₹{Number(deal.price).toLocaleString()}
+                    </span>
+                    {deal.mrp > deal.price && (
+                      <span className="text-xs text-gray-400 line-through">
+                        ₹{Number(deal.mrp).toLocaleString()}
+                      </span>
+                    )}
                   </div>
+                  <div className="flex items-center justify-between">
+                    <span className={`text-xs px-2 py-0.5 rounded-full font-normal
+                                     ${PLATFORM_COLORS[deal.platform] || 'bg-gray-100 text-gray-600'}`}>
+                      {deal.platform}
+                    </span>
+                    {deal.rating > 0 && (
+                      <div className="flex items-center gap-1">
+                        <Star size={11} className="fill-amber-400 text-amber-400" />
+                        <span className="text-xs text-gray-400">{deal.rating}</span>
+                      </div>
+                    )}
+                  </div>
+                  {deal.salesVolume && (
+                    <p className="text-xs text-gray-400 mt-1">{deal.salesVolume}</p>
+                  )}
                 </div>
               </div>
-            </div>
-          ))}
-        </div>
+            ))}
+          </div>
+        )}
       </section>
 
       {/* ───── HOW IT WORKS ───── */}
       <section className="bg-[#0b0b0b] relative overflow-hidden">
+        <div className="absolute -bottom-20 -right-20 w-96 h-96 rounded-full
+                        overflow-hidden opacity-[0.04] pointer-events-none">
+          <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
+        </div>
 
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-16 relative z-10">
           <h2 className="font-serif text-2xl font-normal text-white text-center mb-12">
@@ -315,9 +406,9 @@ export default function Home() {
               {
                 step: '03',
                 title: 'Pick the best deal',
-                desc: 'Compare prices, discounts and ratings — then buy directly from the platform.'
+                desc: 'Compare prices, discounts and ratings — then buy directly.'
               },
-            ].map((item, i) => (
+            ].map(item => (
               <div key={item.step} className="text-center">
                 <div className="w-12 h-12 rounded-2xl bg-white/10 border border-white/10
                                 flex items-center justify-center mx-auto mb-4">
@@ -336,9 +427,10 @@ export default function Home() {
       {/* ───── CTA BANNER ───── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="bg-gray-50 border border-gray-100 rounded-3xl p-10 text-center relative overflow-hidden">
-
-        
-
+          <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full
+                          overflow-hidden opacity-[0.05] pointer-events-none">
+            <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
+          </div>
           <h2 className="font-serif text-3xl font-normal text-[#0b0b0b] mb-3">
             Never overpay again.
           </h2>
@@ -369,17 +461,27 @@ export default function Home() {
       <footer className="border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
+            <img src={logoImg} alt="findSpot" className="h-7 w-auto" />
             <p className="text-xs text-gray-400 font-light">
               © 2026 findSpot. All rights reserved.
             </p>
             <div className="flex items-center gap-4">
-              <a href="https://www.termsfeed.com/live/4122d31f-15fd-4d28-a76a-c503df800931" className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors">
+              
+               <a href="https://www.termsfeed.com/live/4122d31f-15fd-4d28-a76a-c503df800931"
+                className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors"
+              >
                 Privacy
               </a>
-              <a href="https://www.termsfeed.com/live/8c4c0dc1-092e-4ae5-93e3-0f79a853d0e2" className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors">
+              
+               <a href="https://www.termsfeed.com/live/8c4c0dc1-092e-4ae5-93e3-0f79a853d0e2"
+                className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors"
+              >
                 Terms
               </a>
-              <a href="/contact.html" className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors">
+              
+                <a href="/contact.html"
+                className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors"
+              >
                 Contact
               </a>
             </div>
