@@ -197,24 +197,7 @@ export default function Home() {
             ))}
           </div>
         </div>
-      </section>
-
-      {/* ───── PLATFORMS STRIP ───── */}
-      <section className="border-y border-gray-100 bg-gray-50 py-4">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-center gap-2 flex-wrap">
-            <span className="text-xs text-gray-400 mr-2">We search across:</span>
-            {PLATFORMS.map(p => (
-              <span
-                key={p.name}
-                className={`${p.bg} text-xs font-medium px-3 py-1.5 rounded-full text-gray-700`}
-              >
-                {p.name}
-              </span>
-            ))}
-          </div>
-        </div>
-      </section>
+      </section>    
 
       {/* ───── STATS ───── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
@@ -233,32 +216,6 @@ export default function Home() {
               </p>
               <p className="text-xs text-gray-400 font-light">{stat.label}</p>
             </div>
-          ))}
-        </div>
-      </section>
-
-      {/* ───── CATEGORIES ───── */}
-      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
-        <div className="flex items-center justify-between mb-7">
-          <h2 className="font-serif text-2xl font-normal text-[#0b0b0b]">
-            Browse categories
-          </h2>
-          <span className="text-xs text-gray-400">8 categories</span>
-        </div>
-        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
-          {CATEGORIES.map(cat => (
-            <button
-              key={cat.name}
-              onClick={() => navigate(`/search?q=${encodeURIComponent(cat.name)}`)}
-              className={`${cat.color} rounded-2xl p-4 flex flex-col items-center
-                         gap-2 transition-all duration-200 cursor-pointer
-                         hover:scale-105 hover:shadow-sm`}
-            >
-              <span className="text-2xl">{cat.icon}</span>
-              <span className="text-xs text-gray-600 font-normal text-center leading-tight">
-                {cat.name}
-              </span>
-            </button>
           ))}
         </div>
       </section>
@@ -377,6 +334,32 @@ export default function Home() {
         )}
       </section>
 
+      {/* ───── CATEGORIES ───── */}
+      <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-14">
+        <div className="flex items-center justify-between mb-7">
+          <h2 className="font-serif text-2xl font-normal text-[#0b0b0b]">
+            Browse categories
+          </h2>
+          <span className="text-xs text-gray-400">8 categories</span>
+        </div>
+        <div className="grid grid-cols-4 sm:grid-cols-8 gap-3">
+          {CATEGORIES.map(cat => (
+            <button
+              key={cat.name}
+              onClick={() => navigate(`/search?q=${encodeURIComponent(cat.name)}`)}
+              className={`${cat.color} rounded-2xl p-4 flex flex-col items-center
+                         gap-2 transition-all duration-200 cursor-pointer
+                         hover:scale-105 hover:shadow-sm`}
+            >
+              <span className="text-2xl">{cat.icon}</span>
+              <span className="text-xs text-gray-600 font-normal text-center leading-tight">
+                {cat.name}
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+      
       {/* ───── HOW IT WORKS ───── */}
       <section className="bg-[#0b0b0b] relative overflow-hidden">
         <div className="absolute -bottom-20 -right-20 w-96 h-96 rounded-full
@@ -424,7 +407,7 @@ export default function Home() {
       {/* ───── CTA BANNER ───── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="bg-gray-50 border border-gray-100 rounded-3xl p-10 text-center relative overflow-hidden">
-          <div className="absolute -top-10 -right-2 w-64 h-64 rounded-full
+          <div className="absolute -top-10 -right-1 w-64 h-64 rounded-full
                           overflow-hidden opacity-[0.05] pointer-events-none">
             <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
           </div>
