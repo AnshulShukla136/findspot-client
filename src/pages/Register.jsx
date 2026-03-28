@@ -347,9 +347,9 @@ export default function Register() {
 
           <p className="text-xs text-gray-300 text-center mt-3">
             By registering you agree to our{' '}
-            <a href="#" className="text-gray-400 hover:underline">Terms</a>
+            <a href="https://www.termsfeed.com/live/8c4c0dc1-092e-4ae5-93e3-0f79a853d0e2" className="text-gray-400 hover:underline">Terms</a>
             {' '}&amp;{' '}
-            <a href="#" className="text-gray-400 hover:underline">Privacy Policy</a>
+            <a href="https://www.termsfeed.com/live/4122d31f-15fd-4d28-a76a-c503df800931" className="text-gray-400 hover:underline">Privacy Policy</a>
           </p>
 
         </div>
