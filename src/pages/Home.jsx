@@ -424,7 +424,7 @@ export default function Home() {
       {/* ───── CTA BANNER ───── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="bg-gray-50 border border-gray-100 rounded-3xl p-10 text-center relative overflow-hidden">
-          <div className="absolute -top-10 -right-5 w-64 h-64 rounded-full
+          <div className="absolute -top-10 -right-2 w-64 h-64 rounded-full
                           overflow-hidden opacity-[0.05] pointer-events-none">
             <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
           </div>
