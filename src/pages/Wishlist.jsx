@@ -69,7 +69,11 @@ export default function Wishlist() {
                 className="cursor-pointer bg-gray-50"
               >
                 <img
-                  src={product.image}
+                  src={
+                    product.image ||
+                    product.product_photo ||
+                    'https://via.placeholder.com/300'
+                  }
                   alt={product.title}
                   className="w-full h-40 object-contain"
                   onError={(e) => {

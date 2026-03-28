@@ -39,28 +39,39 @@ export default function SearchResults() {
   const [filtersOpen, setFiltersOpen] = useState(false)
   const [priceRange, setPriceRange] = useState([0, 10000])
 
-  useEffect(() => {
-    if (!query) return
+ useEffect(() => {
+  if (!query) return
 
-    let cancelled = false
-    setLoading(true)
+  let cancelled = false
+  setLoading(true)
 
-    const fetchResults = async () => {
-      try {
-        const res = await searchProducts(query)
-        if (!cancelled) {
-          setResults(res.data.products || [])
-          setLoading(false)
-        }
-      } catch (err) {
-        console.error('Search failed:', err.message)
+  const fetchResults = async () => {
+    try {
+      const res = await searchProducts(query)
+      if (!cancelled) {
+        setResults(res.data.products || [])
         setLoading(false)
       }
+    } catch (err) {
+      console.error('Search failed:', err.message)
+      setLoading(false)
     }
+  }
 
+  // ✅ First fetch (fast - RapidAPI)
+  fetchResults()
+
+  const timer = setTimeout(() => {
+    console.log('🔄 Refreshing results with scraped data...')
     fetchResults()
-    return () => { cancelled = true }
-  }, [query])
+  }, 3000)
+
+  return () => {
+    cancelled = true
+    clearTimeout(timer)
+  }
+
+}, [query])
 
   const filtered = results
     .filter(r => activePlatform === 'All' || r.platform === activePlatform)

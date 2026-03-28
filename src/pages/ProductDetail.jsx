@@ -47,7 +47,16 @@ export default function ProductDetail() {
       removeItem(product.id)
       toast.success('Removed from wishlist')
     } else {
-      addItem(product)
+      addItem({
+  id: product.id,
+  title: product.title,
+  image: product.image || product.images?.[0] || product.product_photo,
+  price: product.price,
+  platform: product.platform,
+  url: product.url,
+  rating: product.rating,
+  reviews: product.reviews,
+})
       toast.success('Added to wishlist')
     }
   }
