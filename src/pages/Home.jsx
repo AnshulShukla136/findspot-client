@@ -132,9 +132,6 @@ export default function Home() {
       <section className="relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-16 pb-12 overflow-hidden">
 
         {/* Background logo watermark */}
-        <div className="absolute -top-20 -right-20 w-96 h-96 rounded-full overflow-hidden opacity-[0.04] pointer-events-none">
-          <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
-        </div>
 
         <div className="text-center max-w-3xl mx-auto relative z-10">
 
@@ -427,7 +424,7 @@ export default function Home() {
       {/* ───── CTA BANNER ───── */}
       <section className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-14">
         <div className="bg-gray-50 border border-gray-100 rounded-3xl p-10 text-center relative overflow-hidden">
-          <div className="absolute -top-10 -right-10 w-64 h-64 rounded-full
+          <div className="absolute -top-10 -right-5 w-64 h-64 rounded-full
                           overflow-hidden opacity-[0.05] pointer-events-none">
             <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
           </div>
@@ -461,7 +458,6 @@ export default function Home() {
       <footer className="border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
-            <img src={logoImg} alt="findSpot" className="h-7 w-auto" />
             <p className="text-xs text-gray-400 font-light">
               © 2026 findSpot. All rights reserved.
             </p>
