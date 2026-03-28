@@ -39,11 +39,11 @@ useEffect(() => {
   return (
     <nav className="sticky top-0 z-50 bg-white border-b border-gray-100">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex items-center justify-between h-21 gap-4">
+        <div className="flex items-center justify-between h-20 gap-4">
 
           {/* Logo */}
           <Link to="/" className="flex-shrink-0">
-            <img src={logoImg} alt="findSpot" className="h-18 w-auto" />
+            <img src={logoImg} alt="findSpot" className="h-16 w-auto" />
           </Link>
 
           {/* Search bar - desktop */}
