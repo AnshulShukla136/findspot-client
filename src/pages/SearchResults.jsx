@@ -312,8 +312,8 @@ export default function SearchResults() {
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {filtered.map(product => (
               <div
-                key={product.id}
-                onClick={() => navigate(`/product/${product.id}`)}
+                key={product._id || product.id}
+                onClick={() => navigate(`/product/${product._id || product.id}`)}
                 className="bg-white border border-gray-100 rounded-2xl overflow-hidden 
                            hover:shadow-md hover:border-gray-200 transition-all 
                            cursor-pointer group relative"
