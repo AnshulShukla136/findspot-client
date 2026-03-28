@@ -379,7 +379,7 @@ export default function Home() {
               <a href="https://www.termsfeed.com/live/8c4c0dc1-092e-4ae5-93e3-0f79a853d0e2" className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors">
                 Terms
               </a>
-              <a href="/contact.html" className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors">
+              <a href="contact.html" className="text-xs text-gray-400 hover:text-[#0b0b0b] transition-colors">
                 Contact
               </a>
             </div>
