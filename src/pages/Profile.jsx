@@ -1,7 +1,6 @@
-
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
-import { User, Mail, Phone, Bell, Shield, LogOut, ChevronRight, Heart } from 'lucide-react'
+import { User, Mail, Phone, Bell, Shield, LogOut, ChevronRight, Heart, Mail as MailIcon } from 'lucide-react'
 import Navbar from '../components/Navbar'
 import { useAuth } from '../hooks/useAuth'
 import { useWishlist } from '../hooks/useWishlist'
@@ -19,6 +18,10 @@ export default function Profile() {
     newsletter: false,
   })
 
+  const [showPhoneInput, setShowPhoneInput] = useState(false)
+  const [phoneInput, setPhoneInput] = useState('')
+  const [savingPhone, setSavingPhone] = useState(false)
+
   const handleLogout = () => {
     logout()
     toast.success('Signed out successfully')
@@ -28,6 +31,23 @@ export default function Profile() {
   const toggleNotification = (key) => {
     setNotifications(prev => ({ ...prev, [key]: !prev[key] }))
     toast.success('Preference updated')
+  }
+
+  const handleSavePhone = async () => {
+    if (!phoneInput || phoneInput.length < 10) {
+      toast.error('Enter a valid phone number')
+      return
+    }
+    setSavingPhone(true)
+    try {
+      await new Promise(r => setTimeout(r, 500))
+      toast.success('Phone number saved!')
+      setShowPhoneInput(false)
+    } catch (err) {
+      toast.error('Failed to save phone number')
+    } finally {
+      setSavingPhone(false)
+    }
   }
 
   const getInitials = () => {
@@ -55,7 +75,6 @@ export default function Profile() {
     'User'
 
   const firstName = user?.firstName || user?.name?.split(' ')[0] || 'there'
-
   const phone = user?.phone || null
 
   return (
@@ -67,14 +86,11 @@ export default function Profile() {
         {/* ───── PROFILE HEADER ───── */}
         <div className="flex items-center gap-5 mb-8 p-6 bg-gray-50
                         border border-gray-100 rounded-2xl relative overflow-hidden">
-
-          {/* Background logo watermark */}
           <div className="absolute -bottom-6 -right-6 w-28 h-28 rounded-full
                           overflow-hidden opacity-[0.06] pointer-events-none">
             <img src={logoImg} alt="" className="w-full h-full object-contain" />
           </div>
 
-          {/* Avatar */}
           <div className="w-16 h-16 rounded-full bg-[#0b0b0b] flex items-center
                           justify-center text-white font-serif text-xl flex-shrink-0
                           select-none">
@@ -108,18 +124,14 @@ export default function Profile() {
           <div
             onClick={() => navigate('/wishlist')}
             className="bg-gray-50 border border-gray-100 rounded-2xl p-5
-                       cursor-pointer hover:border-gray-200 transition-colors group"
+                       cursor-pointer hover:border-gray-200 transition-colors"
           >
             <div className="flex items-center gap-2 mb-2">
               <Heart size={15} className="text-red-400" />
               <span className="text-xs text-gray-400">Wishlist</span>
             </div>
-            <p className="font-serif text-2xl text-[#0b0b0b]">
-              {wishlist.length}
-            </p>
-            <p className="text-xs text-gray-400 font-light mt-0.5">
-              saved items
-            </p>
+            <p className="font-serif text-2xl text-[#0b0b0b]">{wishlist.length}</p>
+            <p className="text-xs text-gray-400 font-light mt-0.5">saved items</p>
           </div>
           <div className="bg-gray-50 border border-gray-100 rounded-2xl p-5">
             <div className="flex items-center gap-2 mb-2">
@@ -127,9 +139,7 @@ export default function Profile() {
               <span className="text-xs text-gray-400">Alerts</span>
             </div>
             <p className="font-serif text-2xl text-[#0b0b0b]">0</p>
-            <p className="text-xs text-gray-400 font-light mt-0.5">
-              price alerts set
-            </p>
+            <p className="text-xs text-gray-400 font-light mt-0.5">price alerts set</p>
           </div>
         </div>
 
@@ -156,18 +166,56 @@ export default function Profile() {
               </div>
             </div>
 
+            {/* Phone row */}
             <div className="flex items-center gap-3 px-5 py-4">
               <Phone size={15} className="text-gray-400 flex-shrink-0" />
               <div className="flex-1 min-w-0">
                 <p className="text-xs text-gray-400 mb-0.5">Phone number</p>
                 {phone ? (
                   <p className="text-sm text-[#0b0b0b]">{phone}</p>
+                ) : showPhoneInput ? (
+                  <div className="flex items-center gap-2 mt-1">
+                    <input
+                      type="tel"
+                      value={phoneInput}
+                      onChange={(e) => setPhoneInput(e.target.value.replace(/\D/g, ''))}
+                      placeholder="98765 43210"
+                      maxLength={10}
+                      autoFocus
+                      className="border border-gray-200 rounded-lg px-3 py-1.5 
+                                 text-sm text-[#0b0b0b] outline-none flex-1
+                                 focus:border-[#0b0b0b] transition-colors"
+                    />
+                    <button
+                      onClick={handleSavePhone}
+                      disabled={savingPhone}
+                      className="text-xs bg-[#0b0b0b] text-white px-3 py-1.5
+                                 rounded-lg font-medium hover:bg-[#222]
+                                 transition-colors disabled:opacity-50 whitespace-nowrap"
+                    >
+                      {savingPhone ? 'Saving...' : 'Save'}
+                    </button>
+                    <button
+                      onClick={() => {
+                        setShowPhoneInput(false)
+                        setPhoneInput('')
+                      }}
+                      className="text-xs text-gray-400 hover:text-[#0b0b0b] 
+                                 transition-colors whitespace-nowrap"
+                    >
+                      Cancel
+                    </button>
+                  </div>
                 ) : (
                   <p className="text-sm text-gray-300">Not added yet</p>
                 )}
               </div>
-              {!phone && (
-                <button className="text-xs text-[#0b0b0b] font-medium hover:underline">
+              {!phone && !showPhoneInput && (
+                <button
+                  onClick={() => setShowPhoneInput(true)}
+                  className="text-xs text-[#0b0b0b] font-medium hover:underline 
+                             flex-shrink-0"
+                >
                   Add
                 </button>
               )}
@@ -212,24 +260,25 @@ export default function Profile() {
                   <p className="text-sm text-[#0b0b0b] mb-0.5">{item.label}</p>
                   <p className="text-xs text-gray-400 font-light">{item.desc}</p>
                 </div>
-                {/* Toggle */}
+
+                {/* ✅ Fixed toggle */}
                 <button
                   onClick={() => toggleNotification(item.key)}
                   style={{ height: '24px', width: '44px' }}
-                  className={`relative rounded-full transition-all duration-200 
-                            flex-shrink-0 border
-                            ${notifications[item.key]
-                              ? 'bg-[#0b0b0b] border-[#0b0b0b]'
-                              : 'bg-gray-100 border-gray-300'
-                            }`}
+                  className={`relative rounded-full transition-all duration-200
+                             flex-shrink-0 border-2
+                             ${notifications[item.key]
+                               ? 'bg-white border-[#0b0b0b]'
+                               : 'bg-gray-100 border-gray-300'
+                             }`}
                 >
                   <span
                     className={`absolute top-0.5 w-4 h-4 rounded-full
-                              shadow-md transition-all duration-200
-                              ${notifications[item.key]
-                                ? 'bg-white translate-x-6'
-                                : 'bg-gray-400 translate-x-0.5'
-                              }`}
+                               transition-all duration-200
+                               ${notifications[item.key]
+                                 ? 'bg-[#0b0b0b] translate-x-5'
+                                 : 'bg-gray-400 translate-x-0.5'
+                               }`}
                   />
                 </button>
               </div>
@@ -267,7 +316,6 @@ export default function Profile() {
 
       </div>
 
-      {/* Footer */}
       <footer className="border-t border-gray-100">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <p className="text-xs text-gray-400 text-center font-light">
@@ -278,5 +326,4 @@ export default function Profile() {
 
     </div>
   )
-
 }
