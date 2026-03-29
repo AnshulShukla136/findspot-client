@@ -166,12 +166,8 @@ export default function Register() {
       <div className="flex-1 flex flex-col justify-center px-8 sm:px-14 lg:px-16 py-12 bg-white relative ">
 
         {/* Big circular logo decoration */}
-        <div className="absolute top-0 right-0 w-40 h-40 sm:w-60 sm:h-60 lg:w-80 lg:h-80 opacity-20 pointer-events-none">
-          <img
-            src={logoImg}
-            alt=""
-            className="w-full h-full object-contain"
-          />
+        <div className="absolute top-0 right-0 w-40 h-40 sm:w-60 sm:h-60 lg:w-80 lg:h-80 pointer-events-none">
+          <img src={logoImg} alt="" className="w-full h-full object-contain"/>
         </div>
 
         <div className="w-full max-w-sm mx-auto relative z-10">
