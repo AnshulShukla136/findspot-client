@@ -41,7 +41,7 @@ export const sendOtpLogin = (email) => api.post('/auth/send-otp', { email, isLog
 export const verifyOtp = (email, otp) => api.post('/auth/verify-otp', { email, otp })
 export const getMe = () => api.get('/auth/me')
 export const googleAuth = (accessToken) => api.post('/auth/google', { accessToken })
-
+export const updateProfile = (data) => api.put('/auth/update-profile', data)
 // ── Search ──
 export const searchProducts = (query, filters = {}) =>
   api.get('/search', { params: { q: query, ...filters } })

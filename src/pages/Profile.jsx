@@ -6,10 +6,10 @@ import { useAuth } from '../hooks/useAuth'
 import { useWishlist } from '../hooks/useWishlist'
 import logoImg from '../assets/findSpot.png'
 import toast from 'react-hot-toast'
-
+import { updateProfile } from '../services/api'
 export default function Profile() {
   const navigate = useNavigate()
-  const { user, logout } = useAuth()
+  const { user, logout, login } = useAuth()
   const { wishlist } = useWishlist()
 
   const [notifications, setNotifications] = useState({
@@ -33,22 +33,25 @@ export default function Profile() {
     toast.success('Preference updated')
   }
 
-  const handleSavePhone = async () => {
-    if (!phoneInput || phoneInput.length < 10) {
-      toast.error('Enter a valid phone number')
-      return
-    }
-    setSavingPhone(true)
-    try {
-      await new Promise(r => setTimeout(r, 500))
-      toast.success('Phone number saved!')
-      setShowPhoneInput(false)
-    } catch (err) {
-      toast.error('Failed to save phone number')
-    } finally {
-      setSavingPhone(false)
-    }
+
+const handleSavePhone = async () => {
+  if (!phoneInput || phoneInput.length < 10) {
+    toast.error('Enter a valid phone number')
+    return
   }
+  setSavingPhone(true)
+  try {
+    const res = await updateProfile({ phone: phoneInput })
+    // Update user in context
+    login(res.data.user, localStorage.getItem('findspot_token'))
+    toast.success('Phone number saved!')
+    setShowPhoneInput(false)
+  } catch (err) {
+    toast.error('Failed to save phone number')
+  } finally {
+    setSavingPhone(false)
+  }
+}
 
   const getInitials = () => {
     if (user?.name) {
@@ -264,21 +267,20 @@ export default function Profile() {
                 {/* ✅ Fixed toggle */}
                 <button
                   onClick={() => toggleNotification(item.key)}
-                  style={{ height: '24px', width: '44px' }}
-                  className={`relative rounded-full transition-all duration-200
-                             flex-shrink-0 border-2
-                             ${notifications[item.key]
-                               ? 'bg-white border-[#0b0b0b]'
-                               : 'bg-gray-100 border-gray-300'
-                             }`}
+                  className={`relative w-11 h-6 rounded-full transition-all duration-200 
+                              flex-shrink-0 border-2
+                              ${notifications[item.key]
+                                ? 'bg-white border-[#0b0b0b]'
+                                : 'bg-gray-100 border-gray-300'
+                              }`}
                 >
                   <span
-                    className={`absolute top-0.5 w-4 h-4 rounded-full
-                               transition-all duration-200
-                               ${notifications[item.key]
-                                 ? 'bg-[#0b0b0b] translate-x-5'
-                                 : 'bg-gray-400 translate-x-0.5'
-                               }`}
+                    className={`absolute top-1/2 -translate-y-1/2 w-4 h-4 rounded-full
+                                transition-all duration-200
+                                ${notifications[item.key]
+                                  ? 'bg-[#0b0b0b] translate-x-5'
+                                  : 'bg-gray-400 translate-x-1'
+                                }`}
                   />
                 </button>
               </div>
