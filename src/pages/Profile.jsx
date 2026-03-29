@@ -215,17 +215,21 @@ export default function Profile() {
                 {/* Toggle */}
                 <button
                   onClick={() => toggleNotification(item.key)}
-                  style={{ height: '22px', width: '40px' }}
-                  className={`relative rounded-full transition-colors flex-shrink-0
-                             ${notifications[item.key] ? 'bg-[#0b0b0b]' : 'bg-gray-200'}`}
+                  style={{ height: '24px', width: '44px' }}
+                  className={`relative rounded-full transition-all duration-200 
+                            flex-shrink-0 border
+                            ${notifications[item.key]
+                              ? 'bg-[#0b0b0b] border-[#0b0b0b]'
+                              : 'bg-gray-100 border-gray-300'
+                            }`}
                 >
                   <span
-                    className={`absolute top-0.5 w-4 h-4 bg-white rounded-full
-                               shadow-sm transition-transform
-                               ${notifications[item.key]
-                        ? 'translate-x-5'
-                        : 'translate-x-0.5'
-                      }`}
+                    className={`absolute top-0.5 w-4 h-4 rounded-full
+                              shadow-md transition-all duration-200
+                              ${notifications[item.key]
+                                ? 'bg-white translate-x-6'
+                                : 'bg-gray-400 translate-x-0.5'
+                              }`}
                   />
                 </button>
               </div>
