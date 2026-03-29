@@ -163,14 +163,18 @@ export default function Register() {
       </div>
 
       {/* ───── RIGHT PANEL ───── */}
-      <div className="flex-1 flex flex-col justify-center px-8 sm:px-14 lg:px-16 py-12 bg-white relative overflow-hidden">
+      <div className="flex-1 flex flex-col justify-center px-8 sm:px-14 lg:px-16 py-12 bg-white relative ">
 
         {/* Big circular logo decoration */}
-        <div className="absolute -top-20 right-10 w-80 h-80 rounded-full overflow-hidden pointer-events-none">
-          <img src={logoImg} alt="" className="w-full h-full object-contain scale-125" />
+        <div className="absolute top-0 right-0 w-40 h-40 sm:w-60 sm:h-60 lg:w-80 lg:h-80 opacity-20 pointer-events-none">
+          <img
+            src={logoImg}
+            alt=""
+            className="w-full h-full object-contain"
+          />
         </div>
 
-        <div className="w-full max-w-sm mx-auto">
+        <div className="w-full max-w-sm mx-auto relative z-10">
 
           <h1 className="font-serif text-2xl font-normal text-[#0b0b0b] mb-1 tracking-tight">
             Create account
