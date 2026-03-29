@@ -79,44 +79,53 @@ const FALLBACK_DEALS = [
 export default function Home() {
   const navigate = useNavigate()
   const [searchQuery, setSearchQuery] = useState('')
-  const [deals, setDeals] = useState([])
-  const [dealsLoading, setDealsLoading] = useState(true)
+ const [deals, setDeals] = useState(FALLBACK_DEALS) // shows instantly
 
   // Fetch real deals on page load
   useEffect(() => {
-    let cancelled = false
+  let cancelled = false
 
-    const fetchDeals = async () => {
-      try {
-        setDealsLoading(true)
-        // Search for trending products to show as deals
-        const res = await searchProducts('best deals electronics', {
-          sort: 'discount'
-        })
+  const fetchDeals = async () => {
+    try {
+      // Check localStorage cache first
+      const cached = localStorage.getItem('findspot_deals')
+      const cacheTime = localStorage.getItem('findspot_deals_time')
+      const cacheAge = Date.now() - Number(cacheTime)
+      const thirtyMinutes = 30 * 60 * 1000
 
-        if (!cancelled && res.data?.products?.length > 0) {
-          // Show top 4 deals with highest discount
-          const topDeals = res.data.products
-            .filter(p => p.discount > 0)
-            .sort((a, b) => b.discount - a.discount)
-            .slice(0, 4)
-          setDeals(topDeals)
-        } else if (!cancelled) {
-          setDeals(FALLBACK_DEALS)
-        }
-      } catch (err) {
-        if (!cancelled) {
-          console.error('Failed to fetch deals:', err.message)
-          setDeals(FALLBACK_DEALS)
-        }
-      } finally {
-        if (!cancelled) setDealsLoading(false)
+      // Use cache if less than 30 minutes old
+      if (cached && cacheAge < thirtyMinutes) {
+        console.log('Using cached deals')
+        setDeals(JSON.parse(cached))
+        return
       }
-    }
 
-    fetchDeals()
-    return () => { cancelled = true }
-  }, [])
+      // Fetch real deals from API
+      const res = await searchProducts('best deals electronics', {
+        sort: 'discount'
+      })
+
+      if (!cancelled && res.data?.products?.length > 0) {
+        const topDeals = res.data.products
+          .filter(p => p.discount > 0)
+          .sort((a, b) => b.discount - a.discount)
+          .slice(0, 4)
+
+        setDeals(topDeals)
+
+        // Save to cache for 30 minutes
+        localStorage.setItem('findspot_deals', JSON.stringify(topDeals))
+        localStorage.setItem('findspot_deals_time', String(Date.now()))
+      }
+    } catch (err) {
+      // Keep fallback deals silently
+      console.error('Deals fetch failed:', err.message)
+    }
+  }
+
+  fetchDeals()
+  return () => { cancelled = true }
+}, [])
 
   const handleSearch = (e) => {
     e.preventDefault()
@@ -243,23 +252,9 @@ export default function Home() {
         </div>
 
         {/* Loading skeleton */}
-        {dealsLoading && (
-          <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
-            {[...Array(4)].map((_, i) => (
-              <div key={i} className="border border-gray-100 rounded-2xl overflow-hidden animate-pulse">
-                <div className="bg-gray-100 aspect-square" />
-                <div className="p-3 space-y-2">
-                  <div className="h-3 bg-gray-100 rounded w-full" />
-                  <div className="h-3 bg-gray-100 rounded w-2/3" />
-                  <div className="h-4 bg-gray-100 rounded w-1/2" />
-                </div>
-              </div>
-            ))}
-          </div>
-        )}
+        
 
         {/* Real deals */}
-        {!dealsLoading && (
           <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-4">
             {deals.map((deal, i) => (
               <div
@@ -331,7 +326,6 @@ export default function Home() {
               </div>
             ))}
           </div>
-        )}
       </section>
 
       {/* ───── CATEGORIES ───── */}
