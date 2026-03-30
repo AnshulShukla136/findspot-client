@@ -7,6 +7,8 @@ import { useWishlist } from '../hooks/useWishlist'
 import logoImg from '../assets/findSpot.png'
 import toast from 'react-hot-toast'
 import { updateProfile } from '../services/api'
+
+
 export default function Profile() {
   const navigate = useNavigate()
   const { user, logout, login } = useAuth()
